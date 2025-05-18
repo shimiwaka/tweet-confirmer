@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "ツイート事故防止",
+  "version": "1.0",
+  "description": "特定のアカウントでの投稿時に警告を出す",
+  "permissions": ["activeTab", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "options_page": "options.html"
+} 
