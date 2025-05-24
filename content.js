@@ -72,6 +72,7 @@ function setupTweetButtonTooltip() {
 
 function setupKeyboardShortcut() {
   const tweetBoxSelector = '[data-testid="tweetTextarea_0"]';
+  let isAlertShown = false;
   
   function handleKeyDown(e) {
     if (e.ctrlKey && e.key === 'Enter') {
@@ -80,7 +81,8 @@ function setupKeyboardShortcut() {
         const targetAccounts = result.targetAccounts || [];
         if (accountName && targetAccounts.some(targetAccount => 
           accountName.includes(targetAccount)
-        )) {
+        ) && !isAlertShown) {
+          isAlertShown = true;
           setTimeout(() => {
             alert('これは鍵垢じゃありません');
           }, 0);
