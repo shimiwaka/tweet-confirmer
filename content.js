@@ -72,22 +72,22 @@ function setupTweetButtonTooltip() {
 
 function setupKeyboardShortcut() {
   const tweetBoxSelector = '[data-testid="tweetTextarea_0"]';
-  let isAlertShown = false;
   
   function handleKeyDown(e) {
     if (e.ctrlKey && e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       const accountName = getAccountName();
       chrome.storage.sync.get(['targetAccounts'], (result) => {
         const targetAccounts = result.targetAccounts || [];
         if (accountName && targetAccounts.some(targetAccount => 
           accountName.includes(targetAccount)
-        ) && !isAlertShown) {
-          isAlertShown = true;
-          setTimeout(() => {
-            alert('これは鍵垢じゃありません');
-          }, 0);
+        )) {
+          alert('これは鍵垢ではないので、Ctrl+Enterでの送信はできません');
         }
       });
+      return false;
     }
   }
   
