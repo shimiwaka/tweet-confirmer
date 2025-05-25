@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    h3 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .account-list {
+      margin: 10px 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .account-item {
+      display: flex;
+      margin: 8px 0;
+      align-items: center;
+    }
+    .account-item input {
+      flex-grow: 1;
+      margin-right: 8px;
+      padding: 4px 6px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    button {
+      padding: 4px 8px;
+      margin: 2px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      background: #f5f5f5;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    button:hover {
+      background: #e0e0e0;
+    }
+    .delete-btn {
+      background: #ffebee;
+      color: #c62828;
+      border-color: #ffcdd2;
+    }
+    .delete-btn:hover {
+      background: #ffcdd2;
+    }
+    .add-btn {
+      background: #e8f5e8;
+      color: #2e7d32;
+      border-color: #c8e6c9;
+    }
+    .add-btn:hover {
+      background: #c8e6c9;
+    }
+    .save-btn {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-color: #bbdefb;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .save-btn:hover {
+      background: #bbdefb;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      text-align: center;
+    }
+    .success {
+      background: #e8f5e8;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+  </style>
+</head>
+<body>
+  <h3>監視対象アカウント設定</h3>
+  <div id="accountList" class="account-list"></div>
+  <button id="addAccount" class="add-btn">アカウントを追加</button>
+  <button id="save" class="save-btn">設定を保存</button>
+  <div id="message"></div>
+  <script src="popup.js"></script>
+</body>
+</html> 
