@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <style>
     body {
-      width: 300px;
+      width: 320px;
       padding: 15px;
       margin: 0;
       font-family: Arial, sans-serif;
@@ -14,9 +14,18 @@
       font-size: 16px;
       color: #333;
     }
+    .section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
     .account-list {
       margin: 10px 0;
-      max-height: 200px;
+      max-height: 150px;
       overflow-y: auto;
     }
     .account-item {
@@ -31,6 +40,22 @@
       border: 1px solid #ddd;
       border-radius: 3px;
       font-size: 12px;
+    }
+    .watchwords-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 12px;
+      resize: vertical;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
+    .help-text {
+      font-size: 11px;
+      color: #666;
+      margin-top: 5px;
     }
     button {
       padding: 4px 8px;
@@ -85,9 +110,18 @@
   </style>
 </head>
 <body>
-  <h3>監視対象アカウント設定</h3>
-  <div id="accountList" class="account-list"></div>
-  <button id="addAccount" class="add-btn">アカウントを追加</button>
+  <div class="section">
+    <h3>監視対象アカウント設定</h3>
+    <div id="accountList" class="account-list"></div>
+    <button id="addAccount" class="add-btn">アカウントを追加</button>
+  </div>
+  
+  <div class="section">
+    <h3>監視ワード設定</h3>
+    <textarea id="watchWords" class="watchwords-textarea" placeholder="監視ワードを改行区切りで入力してください"></textarea>
+    <div class="help-text">2回以上含まれる場合にテキストエリアが赤くなります</div>
+  </div>
+  
   <button id="save" class="save-btn">設定を保存</button>
   <div id="message"></div>
   <script src="popup.js"></script>

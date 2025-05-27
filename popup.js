@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const addButton = document.getElementById('addAccount');
   const saveButton = document.getElementById('save');
   const messageDiv = document.getElementById('message');
+  const watchWordsTextarea = document.getElementById('watchWords');
 
   function showMessage(text, isSuccess = true) {
     messageDiv.textContent = text;
@@ -44,13 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(input => input.value.trim())
       .filter(value => value !== '');
     
-    chrome.storage.sync.set({ targetAccounts: accounts }, () => {
+    const watchWords = watchWordsTextarea.value
+      .split('\n')
+      .map(word => word.trim())
+      .filter(word => word !== '');
+    
+    chrome.storage.sync.set({ 
+      targetAccounts: accounts,
+      watchWords: watchWords
+    }, () => {
       showMessage('設定を保存しました');
     });
   };
 
-  chrome.storage.sync.get(['targetAccounts'], (result) => {
+  chrome.storage.sync.get(['targetAccounts', 'watchWords'], (result) => {
     const accounts = result.targetAccounts || [];
+    const watchWords = result.watchWords || [];
+    
     if (accounts.length === 0) {
       accountList.appendChild(createAccountInput());
     } else {
@@ -58,6 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         accountList.appendChild(createAccountInput(account));
       });
     }
+    
+    watchWordsTextarea.value = watchWords.join('\n');
   });
 
   document.addEventListener('keydown', (e) => {
