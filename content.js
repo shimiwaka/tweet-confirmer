@@ -74,7 +74,7 @@ function setupKeyboardShortcut() {
   const tweetBoxSelector = '[data-testid="tweetTextarea_0"]';
   
   function handleKeyDown(e) {
-    if (e.ctrlKey && e.key === 'Enter') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -84,7 +84,8 @@ function setupKeyboardShortcut() {
         if (accountName && targetAccounts.some(targetAccount => 
           accountName.includes(targetAccount)
         )) {
-          alert('これは鍵垢ではないので、Ctrl+Enterでの送信はできません');
+          const shortcut = e.metaKey ? 'Cmd+Enter' : 'Ctrl+Enter';
+          alert(`これは鍵垢ではないので、${shortcut}での送信はできません`);
         }
       });
       return false;
