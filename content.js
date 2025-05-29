@@ -84,8 +84,8 @@ function setupKeyboardShortcut() {
         if (accountName && targetAccounts.some(targetAccount => 
           accountName.includes(targetAccount)
         )) {
-          const shortcut = e.metaKey ? 'Cmd+Enter' : 'Ctrl+Enter';
-          alert(`これは鍵垢ではないので、${shortcut}での送信はできません`);
+          const shortcut = e.metaKey ? 'Cmd + Enter' : 'Ctrl + Enter';
+          alert(`このアカウントでは、${shortcut}での送信はできません`);
         }
       });
       return false;
