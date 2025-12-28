@@ -1,35 +1,32 @@
-# ツイート事故防止
+# tweet-confirmer
 
-特定のXアカウントでログインしている場合に、投稿時に警告を表示する Chrome 拡張機能です。
-鍵垢のつもりでアカウントを間違えて誤爆することなどを防ぎます。
+When you logged in specified X account and were going to send tweet, this Chrome extension shows alert.
+It protects you from SNS accident like tweeting on a public account when you meant it was a private account.
 
-## 機能
+## Function
 
-1. 指定したアカウントで X にログインしている場合：
-   - ツイートボタンにマウスを乗せると「このアカウントで大丈夫？」というポップアップが表示されます
-   - Ctrl+Enter/Cmd+Enterでツイートを送信することはできなくなります
+1. When you logged in specified account :
+   - when mouseover Tweet Button, popup says `このアカウントで大丈夫？`.
+   - and this extension prohibits posting by Ctrl+Enter/Cmd+Enter
 
-2. 監視ワード機能：
-   - 監視ワードがテキストに2回以上含まれる場合、ツイートボックスエリアの背景が赤色（#ffbbbb）になります
+2. word dupplication observation
+   - when tweet content included specified word more than 2 times, tweet input area will turn red.
 
-## 使い方
+## How To Use
 
-### 1. Chrome拡張機能の導入方法
+### 1. import as chrome extension
+1. open Google Chrome
+2. enter  `chrome://extensions/` to URL bar
+3. toggle on `開発者モード` at upper right
+4. click `パッケージ化されていない拡張機能を読み込む`
+5. select `tweet-confirmer` downloaded at step 1
 
-1. Chromeで `chrome://extensions/` を開きます
-2. 右上の「デベロッパーモード」をオンにします
-3. 「パッケージ化されていない拡張機能を読み込む」をクリックします
-4. Clone した `tweet-confirmer`ディレクトリを選択します
 
-### 2. 設定の方法
+### 2. Settings
 
-1. 拡張機能のアイコンを右クリックして「オプション」を選択します
-2. 「アカウントを追加」ボタンをクリックして、監視したいアカウント名や監視ワードを入力します
-   - アカウント名は部分一致で判定されます
-   - 複数のアカウントを指定可能です
-3. 「保存」ボタンをクリックして設定を保存します
+1. Click app icon at Chrome toolbar and select `オプション`
+2. Click `アカウントを追加` and specified account screen name and word you want to observation.
+   - account name determined by partial match
+   - you can specify multi accounts
+3. Click `保存`, settings will be saved after that.
 
-## 注意事項
-
-- アカウント名は部分一致で判定されます（例：「@username」で指定した場合、「@username_123」も対象になります）
-- 設定したアカウントでログインしている場合のみ機能が有効になります
