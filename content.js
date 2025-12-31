@@ -132,32 +132,6 @@ function waitForElement(selector, callback, maxAttempts = 50) {
   checkElement();
 }
 
-function initialize() {
-  const accountSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-184id4b > div > button';
-  
-  setupWatchWordMonitoring();
-  
-  waitForElement(accountSelector, () => {
-    setupAccountMonitoring();
-  });
-}
-
-// ページ読み込み完了時に初期化
-if (document.readyState === 'complete') {
-  initialize();
-} else {
-  window.addEventListener('load', initialize);
-}
-
-// URL変更時にも初期化
-let lastUrl = location.href;
-new MutationObserver(() => {
-  if (location.href !== lastUrl) {
-    lastUrl = location.href;
-    initialize();
-  }
-}).observe(document, { subtree: true, childList: true });
-
 function setupWatchWordMonitoring() {
   let watchWords = [];
   
@@ -275,9 +249,35 @@ function setupWatchWordMonitoring() {
       }
     });
   });
-  
+
   observer.observe(document.body, {
     childList: true,
     subtree: true
   });
-} 
+}
+
+function initialize() {
+  const accountSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-184id4b > div > button';
+
+  setupWatchWordMonitoring();
+
+  waitForElement(accountSelector, () => {
+    setupAccountMonitoring();
+  });
+}
+
+// ページ読み込み完了時に初期化
+if (document.readyState === 'complete') {
+  initialize();
+} else {
+  window.addEventListener('load', initialize);
+}
+
+// URL変更時にも初期化
+let lastUrl = location.href;
+new MutationObserver(() => {
+  if (location.href !== lastUrl) {
+    lastUrl = location.href;
+    initialize();
+  }
+}).observe(document, { subtree: true, childList: true }); 
