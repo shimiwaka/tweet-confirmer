@@ -132,17 +132,96 @@ function waitForElement(selector, callback, maxAttempts = 50) {
   checkElement();
 }
 
+function getTweetText() {
+  const textarea = document.querySelector('[data-testid="tweetTextarea_0"]');
+  return textarea ? (textarea.value || textarea.textContent || textarea.innerText || '') : '';
+}
+
+function setupAlertWordMonitoring() {
+  let alertWords = [];
+
+  chrome.storage.sync.get(['alertWords'], (result) => {
+    alertWords = result.alertWords || [];
+  });
+
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.alertWords) {
+      alertWords = changes.alertWords.newValue || [];
+    }
+  });
+
+  function checkAlertWords(text) {
+    if (!text || alertWords.length === 0) return [];
+    const lowerText = text.toLowerCase();
+    return alertWords.filter(word => {
+      if (!word) return false;
+      const lowerWord = word.toLowerCase();
+      const regex = new RegExp(lowerWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      return regex.test(lowerText);
+    });
+  }
+
+  function handlePostAttempt(e) {
+    const isShortcut = (e.type === 'keydown') && (e.ctrlKey || e.metaKey) && e.key === 'Enter';
+    if (e.type === 'keydown' && !isShortcut) return;
+
+    const text = getTweetText();
+    const matched = checkAlertWords(text);
+    if (matched.length === 0) return;
+
+    const wordList = matched.map(w => `「${w}」`).join('、');
+    const ok = confirm(`以下のワードが含まれています：${wordList}\n本当に投稿しますか？`);
+    if (!ok) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      handlePostAttempt(e);
+    }
+  }, true);
+
+  const observer = new MutationObserver(() => {
+    const tweetButtonSelectors = [
+      '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div.css-175oi2r.r-14lw9ot.r-jxzhtn.r-1ua6aaf.r-th6na.r-1phboty.r-16y2uox.r-184en5c.r-1abdc3e.r-1lg4w6u.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div.css-175oi2r.r-14lw9ot.r-184en5c.TweetBox > div > div.css-175oi2r.r-1h8ys4a > div:nth-child(1) > div > div > div > div.css-175oi2r.r-1iusvr4.r-16y2uox.r-1777fci.r-1h8ys4a.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div.css-175oi2r.r-14lw9ot.r-jumn1c.r-xd6kpl.r-gtdqiz.r-ipm5af.r-184en5c > div:nth-child(2) > div > div > div > button',
+    ];
+    for (const selector of tweetButtonSelectors) {
+      const btn = document.querySelector(selector);
+      if (btn && !btn.dataset.alertWordListener) {
+        btn.dataset.alertWordListener = 'true';
+        btn.addEventListener('click', (e) => {
+          const text = getTweetText();
+          const matched = checkAlertWords(text);
+          if (matched.length === 0) return;
+          const wordList = matched.map(w => `「${w}」`).join('、');
+          const ok = confirm(`以下のワードが含まれています：${wordList}\n本当に投稿しますか？`);
+          if (!ok) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+        break;
+      }
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 function setupWatchWordMonitoring() {
   let watchWords = [];
-  
+
   chrome.storage.sync.get(['watchWords'], (result) => {
     watchWords = result.watchWords || [];
   });
-  
+
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.watchWords) {
       watchWords = changes.watchWords.newValue || [];
-      // 設定変更時に既存のテキストエリアを再チェック
       recheckAllTextareas();
     }
   });
@@ -260,6 +339,7 @@ function initialize() {
   const accountSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-184id4b > div > button';
 
   setupWatchWordMonitoring();
+  setupAlertWordMonitoring();
 
   waitForElement(accountSelector, () => {
     setupAccountMonitoring();

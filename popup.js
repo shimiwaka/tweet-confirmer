@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save');
   const messageDiv = document.getElementById('message');
   const watchWordsTextarea = document.getElementById('watchWords');
+  const alertWordsTextarea = document.getElementById('alertWords');
 
   function showMessage(text, isSuccess = true) {
     messageDiv.textContent = text;
@@ -49,19 +50,26 @@ document.addEventListener('DOMContentLoaded', () => {
       .split('\n')
       .map(word => word.trim())
       .filter(word => word !== '');
-    
-    chrome.storage.sync.set({ 
+
+    const alertWords = alertWordsTextarea.value
+      .split('\n')
+      .map(word => word.trim())
+      .filter(word => word !== '');
+
+    chrome.storage.sync.set({
       targetAccounts: accounts,
-      watchWords: watchWords
+      watchWords: watchWords,
+      alertWords: alertWords
     }, () => {
       showMessage('設定を保存しました');
     });
   };
 
-  chrome.storage.sync.get(['targetAccounts', 'watchWords'], (result) => {
+  chrome.storage.sync.get(['targetAccounts', 'watchWords', 'alertWords'], (result) => {
     const accounts = result.targetAccounts || [];
     const watchWords = result.watchWords || [];
-    
+    const alertWords = result.alertWords || [];
+
     if (accounts.length === 0) {
       accountList.appendChild(createAccountInput());
     } else {
@@ -69,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
         accountList.appendChild(createAccountInput(account));
       });
     }
-    
+
     watchWordsTextarea.value = watchWords.join('\n');
+    alertWordsTextarea.value = alertWords.join('\n');
   });
 
   document.addEventListener('keydown', (e) => {
