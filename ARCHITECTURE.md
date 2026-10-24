@@ -55,10 +55,11 @@ chrome.storage.sync
 
 ## DOM セレクターの脆弱性
 
-`content.js` は Twitter/X の内部 CSS クラス（`r-xxxxx` 形式）に依存したハードコードセレクターを使用している。
-Twitter の UI 変更でセレクターが壊れやすい。壊れた場合は対象要素を DevTools で再取得してセレクターを更新する。
+`content.js` は X の `data-testid` 属性に依存したセレクターを使用している（`accountSelector`, `tweetButtonSelector`, `tweetTextarea_0` など）。
+内部 CSS クラス（`r-xxxxx` 形式）はビルドごとに変わるため使わないこと。壊れた場合は DevTools で `data-testid` を再確認して更新する。
 
 ## SPA 対応
 
 Twitter は SPA なのでページ遷移時に `load` イベントが発火しない。
-URL 変化を MutationObserver で検知して `initialize()` を再呼び出しすることで対応している。
+`initialize()` は一度だけ実行し、各 MutationObserver が `document.body` 全体を監視し続けることで遷移後の要素にも対応している。
+二重登録防止のため、要素ごとに `dataset.*Listener` フラグを立てている。

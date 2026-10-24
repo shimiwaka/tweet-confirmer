@@ -3,9 +3,11 @@ const targetUrls = [
   'https://x.com/*'
 ];
 
+const accountSelector = '[data-testid="SideNav_AccountSwitcher_Button"]';
+const tweetButtonSelector = '[data-testid="tweetButtonInline"], [data-testid="tweetButton"]';
+
 function getAccountName() {
-  const selector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-184id4b > div > button';
-  const element = document.querySelector(selector);
+  const element = document.querySelector(accountSelector);
   return element ? element.textContent.trim() : null;
 }
 
@@ -28,11 +30,6 @@ function createTooltip() {
 }
 
 function setupTweetButtonTooltip() {
-  const tweetButtonSelectors = [
-    '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div.css-175oi2r.r-14lw9ot.r-jxzhtn.r-1ua6aaf.r-th6na.r-1phboty.r-16y2uox.r-184en5c.r-1abdc3e.r-1lg4w6u.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div.css-175oi2r.r-14lw9ot.r-184en5c.TweetBox > div > div.css-175oi2r.r-1h8ys4a > div:nth-child(1) > div > div > div > div.css-175oi2r.r-1iusvr4.r-16y2uox.r-1777fci.r-1h8ys4a.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div.css-175oi2r.r-14lw9ot.r-jumn1c.r-xd6kpl.r-gtdqiz.r-ipm5af.r-184en5c > div:nth-child(2) > div > div > div > button',
-    '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div.css-175oi2r.r-14lw9ot.r-jxzhtn.r-1ua6aaf.r-th6na.r-1phboty.r-16y2uox.r-184en5c.r-1abdc3e.r-1lg4w6u.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div.css-175oi2r.r-14lw9ot.r-184en5c > div > div.css-175oi2r.r-1h8ys4a > div:nth-child(1) > div > div > div > div.css-175oi2r.r-1iusvr4.r-16y2uox.r-1777fci.r-1h8ys4a.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div.css-175oi2r.r-14lw9ot.r-jumn1c.r-xd6kpl.r-gtdqiz.r-ipm5af.r-184en5c > div:nth-child(2) > div > div > div > button > div > span > span'
-  ];
-  
   const tooltip = createTooltip();
   
   function showTooltip(e) {
@@ -52,16 +49,14 @@ function setupTweetButtonTooltip() {
     }
   }
   
-  const observer = new MutationObserver((mutations) => {
-    for (const selector of tweetButtonSelectors) {
-      const tweetButton = document.querySelector(selector);
-      if (tweetButton) {
-        tweetButton.addEventListener('mouseenter', showTooltip);
-        tweetButton.addEventListener('mouseleave', hideTooltip);
-        tweetButton.addEventListener('mousemove', updateTooltipPosition);
-        break;
-      }
-    }
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll(tweetButtonSelector).forEach(tweetButton => {
+      if (tweetButton.dataset.tooltipListener) return;
+      tweetButton.dataset.tooltipListener = 'true';
+      tweetButton.addEventListener('mouseenter', showTooltip);
+      tweetButton.addEventListener('mouseleave', hideTooltip);
+      tweetButton.addEventListener('mousemove', updateTooltipPosition);
+    });
   });
   
   observer.observe(document.body, {
@@ -185,28 +180,11 @@ function setupAlertWordMonitoring() {
   }, true);
 
   const observer = new MutationObserver(() => {
-    const tweetButtonSelectors = [
-      '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div.css-175oi2r.r-14lw9ot.r-jxzhtn.r-1ua6aaf.r-th6na.r-1phboty.r-16y2uox.r-184en5c.r-1abdc3e.r-1lg4w6u.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div.css-175oi2r.r-14lw9ot.r-184en5c.TweetBox > div > div.css-175oi2r.r-1h8ys4a > div:nth-child(1) > div > div > div > div.css-175oi2r.r-1iusvr4.r-16y2uox.r-1777fci.r-1h8ys4a.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div.css-175oi2r.r-14lw9ot.r-jumn1c.r-xd6kpl.r-gtdqiz.r-ipm5af.r-184en5c > div:nth-child(2) > div > div > div > button',
-    ];
-    for (const selector of tweetButtonSelectors) {
-      const btn = document.querySelector(selector);
-      if (btn && !btn.dataset.alertWordListener) {
-        btn.dataset.alertWordListener = 'true';
-        btn.addEventListener('click', (e) => {
-          const text = getTweetText();
-          const matched = checkAlertWords(text);
-          if (matched.length === 0) return;
-          const wordList = matched.map(w => `「${w}」`).join('、');
-          const ok = confirm(`以下のワードが含まれています：${wordList}\n本当に投稿しますか？`);
-          if (!ok) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-          }
-        }, true);
-        break;
-      }
-    }
+    document.querySelectorAll(tweetButtonSelector).forEach(btn => {
+      if (btn.dataset.alertWordListener) return;
+      btn.dataset.alertWordListener = 'true';
+      btn.addEventListener('click', handlePostAttempt, true);
+    });
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
@@ -250,8 +228,7 @@ function setupWatchWordMonitoring() {
   function updateTextareaBackground(textarea) {
     const text = textarea.value || textarea.textContent || textarea.innerText || '';
     const hasWatchWords = checkWatchWords(text);
-    const targetSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > main > div > div > div > div.css-175oi2r.r-14lw9ot.r-jxzhtn.r-1ua6aaf.r-th6na.r-1phboty.r-16y2uox.r-184en5c.r-1abdc3e.r-1lg4w6u.r-f8sm7e.r-13qz1uu.r-1ye8kvj > div > div.css-175oi2r.r-14lw9ot.r-184en5c.TweetBox > div > div.css-175oi2r.r-1h8ys4a > div:nth-child(1) > div > div > div';
-    const targetElement = document.querySelector(targetSelector);
+    const targetElement = textarea.closest('[data-testid$="_label"]') || textarea;
     
     if (targetElement) {
       // 現在の背景色状態を確認
@@ -335,8 +312,11 @@ function setupWatchWordMonitoring() {
   });
 }
 
+let initialized = false;
+
 function initialize() {
-  const accountSelector = '#react-root > div > div > div.css-175oi2r.r-1f2l425.r-13qz1uu.r-417010.r-18u37iz > header > div > div > div > div.css-175oi2r.r-184id4b > div > button';
+  if (initialized) return;
+  initialized = true;
 
   setupWatchWordMonitoring();
   setupAlertWordMonitoring();
@@ -352,12 +332,3 @@ if (document.readyState === 'complete') {
 } else {
   window.addEventListener('load', initialize);
 }
-
-// URL変更時にも初期化
-let lastUrl = location.href;
-new MutationObserver(() => {
-  if (location.href !== lastUrl) {
-    lastUrl = location.href;
-    initialize();
-  }
-}).observe(document, { subtree: true, childList: true }); 
